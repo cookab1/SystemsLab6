@@ -169,13 +169,16 @@ void eval(char *cmdline)
     char *argv[MAXARGS]; // Argument list execve()
     char buf[MAXLINE]; // Holds modified command line
     pid_t pid;
+    int bg;
 
     strcpy(buf, cmdline);
+    bg = parseline(buf, argv);
     if(argv[0] == NULL)
         return; // Ignore empty lines
 
-    if(!builtin_command(argv)) {
-        if((pid = Fork()) == 0){ // Child runs user job
+    if(!builtin_cmd(argv)) {
+        pid = fork();
+        if(pid == 0){ // Child runs user job
             if(execve(argv[0], argv, environ) < 0) {
                 printf("%s: Command not found.\n", argv[0]);
                 exit(0);
@@ -248,8 +251,10 @@ int parseline(const char *cmdline, char **argv)
  */
 int builtin_cmd(char **argv) 
 {
-    if(!strcmp(argv[0], "quit")) // quit command
+    if(!strcmp(argv[0], "quit")){ // quit command
         exit(0);
+        printf("should be calling exit(0)");
+    }
     if(!strcmp(argv[0], "&")) // Ignore singleton &
         return 1;
     return 0;     /* not a builtin command */
