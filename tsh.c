@@ -13,6 +13,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <errno.h>
+#include "csapp.h"
 
 /* Misc manifest constants */
 #define MAXLINE    1024   /* max line size */
@@ -50,6 +51,9 @@ struct job_t {              /* The job struct */
     char cmdline[MAXLINE];  /* command line */
 };
 struct job_t jobs[MAXJOBS]; /* The job list */
+
+sigset_t mask, prev_mask;  /*Holds the mask and previous mask for signal blocking */
+
 /* End global variables */
 
 
@@ -85,6 +89,10 @@ void unix_error(char *msg);
 void app_error(char *msg);
 typedef void handler_t(int);
 handler_t *Signal(int signum, handler_t *handler);
+pid_t Fork(void);
+int Exec(const char *, char *const [], char *const []);
+void addSigBlock(char []);
+void restoreSigBlock();
 
 /*
  * main - The shell's main routine 
@@ -177,15 +185,49 @@ void eval(char *cmdline)
         return; // Ignore empty lines
 
     if(!builtin_cmd(argv)) {
-        pid = fork();
+        addSigBlock("SIGCHLD");
+        pid = Fork();
         if(pid == 0){ // Child runs user job
-            if(execve(argv[0], argv, environ) < 0) {
+            if(Exec(argv[0], argv, environ) < 0) {
                 printf("%s: Command not found.\n", argv[0]);
                 exit(0);
             }
         }
     }
     return;
+}
+
+pid_t Fork(void){
+    pid_t pid = 0;
+
+    if ((pid == fork()) < 0)
+        unix_error("Fork error");
+    return pid;
+}
+
+int Exec(const char *filename, char *const argv[], char *const envp[]) {
+    if(execve(filename, argv, envp) < 0)
+        return -1;
+    return 0;
+}
+
+void addSigBlock(char signal[]){
+    Sigemptyset(&mask);
+
+    switch(signal){
+        case "SIGINT":
+            Sigaddset(&mask, SIGINT);
+            Sigprocmask(SIG_BLOCK, &mask, &prev_mask);
+            break;
+        case "SIGCHLD":
+            Sigaddset(&mask, SIGCHLD);
+            Sigprocmask(SIG_BLOCK, &mask, &prev_mask);
+            break;
+    }
+}
+
+void restoreSigBlock(){
+    Sigprocmask(SIG_SETMASK, &prev_mask, NULL);
 }
 
 /* 
