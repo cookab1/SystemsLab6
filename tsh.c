@@ -1,7 +1,8 @@
 /* 
  * tsh - A tiny shell program with job control
  * 
- * <Put your name and login ID here>
+ * Andy Cook  Brenner Harris
+ *   cookab1     harrisbd>
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -165,6 +166,22 @@ int main(int argc, char **argv)
 */
 void eval(char *cmdline) 
 {
+    char *argv[MAXARGS]; // Argument list execve()
+    char buf[MAXLINE]; // Holds modified command line
+    pid_t pid;
+
+    strcpy(buf, cmdline);
+    if(argv[0] == NULL)
+        return; // Ignore empty lines
+
+    if(!builtin_command(argv)) {
+        if((pid = Fork()) == 0){ // Child runs user job
+            if(execve(argv[0], argv, environ) < 0) {
+                printf("%s: Command not found.\n", argv[0]);
+                exit(0);
+            }
+        }
+    }
     return;
 }
 
@@ -231,6 +248,10 @@ int parseline(const char *cmdline, char **argv)
  */
 int builtin_cmd(char **argv) 
 {
+    if(!strcmp(argv[0], "quit")) // quit command
+        exit(0);
+    if(!strcmp(argv[0], "&")) // Ignore singleton &
+        return 1;
     return 0;     /* not a builtin command */
 }
 
