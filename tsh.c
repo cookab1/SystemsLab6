@@ -13,7 +13,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <errno.h>
-#include "csapp.h"
+//#include "csapp.h"
 
 /* Misc manifest constants */
 #define MAXLINE    1024   /* max line size */
@@ -178,6 +178,7 @@ void eval(char *cmdline)
     char buf[MAXLINE]; // Holds modified command line
     pid_t pid;
     int bg;
+    
 
     strcpy(buf, cmdline);
     bg = parseline(buf, argv);
@@ -192,6 +193,16 @@ void eval(char *cmdline)
                 printf("%s: Command not found.\n", argv[0]);
                 exit(0);
             }
+
+        }
+        sigfillset(&mask);
+        sigprocmask(SIG_BLOCK, &mask, &prev_mask);
+        //Should the child process be in the BG?
+        addjob(jobs, pid, BG, cmdline);
+        sigprocmask(SIG_SETMASK, &prev_mask, NULL);
+
+        if (!bg == 0){
+            waitfg(pid);
         }
     }
     return;
@@ -212,22 +223,21 @@ int Exec(const char *filename, char *const argv[], char *const envp[]) {
 }
 
 void addSigBlock(char signal[]){
-    Sigemptyset(&mask);
 
-    switch(signal){
-        case "SIGINT":
-            Sigaddset(&mask, SIGINT);
-            Sigprocmask(SIG_BLOCK, &mask, &prev_mask);
-            break;
-        case "SIGCHLD":
-            Sigaddset(&mask, SIGCHLD);
-            Sigprocmask(SIG_BLOCK, &mask, &prev_mask);
-            break;
+    sigemptyset(&mask);
+    
+    if (strcmp(signal, "SIGINT") == 0){
+        sigaddset(&mask, SIGINT);
+        sigprocmask(SIG_BLOCK, &mask, &prev_mask);
+    }
+    else if (strcmp(signal, "SIGCHLD") == 0){
+        sigaddset(&mask, SIGCHLD);
+        sigprocmask(SIG_BLOCK, &mask, &prev_mask);   
     }
 }
 
 void restoreSigBlock(){
-    Sigprocmask(SIG_SETMASK, &prev_mask, NULL);
+    sigprocmask(SIG_SETMASK, &prev_mask, NULL);
 }
 
 /* 
@@ -315,6 +325,9 @@ void do_bgfg(char **argv)
  */
 void waitfg(pid_t pid)
 {
+    while(pid == fgpid(jobs)) {
+        sleep(1);
+    }
     return;
 }
 
@@ -331,6 +344,15 @@ void waitfg(pid_t pid)
  */
 void sigchld_handler(int sig) 
 {
+    int status;
+    int pid = waitpid(-1, &status, 0);
+    if (WIFEXITED(status)){
+        sigfillset(&mask);
+        sigprocmask(SIG_BLOCK, &mask, &prev_mask);
+        //will come back here later in lab
+        deletejob(jobs, pid);
+        sigprocmask(SIG_SETMASK, &prev_mask, NULL);
+    }
     return;
 }
 
@@ -395,7 +417,7 @@ int addjob(struct job_t *jobs, pid_t pid, int state, char *cmdline)
     int i;
     
     if (pid < 1)
-	return 0;
+	    return 0;
 
     for (i = 0; i < MAXJOBS; i++) {
 	if (jobs[i].pid == 0) {
@@ -403,12 +425,13 @@ int addjob(struct job_t *jobs, pid_t pid, int state, char *cmdline)
 	    jobs[i].state = state;
 	    jobs[i].jid = nextjid++;
 	    if (nextjid > MAXJOBS)
-		nextjid = 1;
+		    nextjid = 1;
 	    strcpy(jobs[i].cmdline, cmdline);
+        printf("[%d] (%d) %s", jobs[i].jid, jobs[i].pid, jobs[i].cmdline);
   	    if(verbose){
 	        printf("Added job [%d] %d %s\n", jobs[i].jid, jobs[i].pid, jobs[i].cmdline);
-            }
-            return 1;
+        }
+        return 1;
 	}
     }
     printf("Tried to create too many jobs\n");

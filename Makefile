@@ -9,7 +9,7 @@ TSHREF = ./tshref
 TSHARGS = "-p"
 CC = gcc
 CFLAGS = -Wall -O2 -g -lpthread
-FILES = $(TSH) ./myspin ./mysplit ./mystop ./myint ./csapp.c
+FILES = $(TSH) ./myspin ./mysplit ./mystop ./myint
 
 all: $(FILES)
 
