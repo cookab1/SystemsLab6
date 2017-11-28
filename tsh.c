@@ -101,7 +101,8 @@ int main(int argc, char **argv)
 {
     char c;
     char cmdline[MAXLINE];
-    int emit_prompt = 1; /* emit prompt (default) */
+    int omit_prompt = 1; /* emit prompt (default) */
+    
 
     /* Redirect stderr to stdout (so that driver will get all output
      * on the pipe connected to stdout) */
@@ -117,11 +118,11 @@ int main(int argc, char **argv)
             verbose = 1;
 	    break;
         case 'p':             /* don't print a prompt */
-            emit_prompt = 0;  /* handy for automatic testing */
+            omit_prompt = 0;  /* handy for automatic testing */
 	    break;
-	default:
+	    default:
             usage();
-	}
+	    }
     }
 
     /* Install the signal handlers */
@@ -141,7 +142,7 @@ int main(int argc, char **argv)
     while (1) {
 
 	/* Read command line */
-	if (emit_prompt) {
+	if (omit_prompt) {
 	    printf("%s", prompt);
 	    fflush(stdout);
 	}
@@ -193,6 +194,7 @@ void eval(char *cmdline)
                 printf("%s: Command not found.\n", argv[0]);
                 exit(0);
             }
+            printf("Gets past the Exec\n");
 
         }
         sigfillset(&mask);
@@ -211,7 +213,7 @@ void eval(char *cmdline)
 pid_t Fork(void){
     pid_t pid = 0;
 
-    if ((pid == fork()) < 0)
+    if ((pid = fork()) < 0)
         unix_error("Fork error");
     return pid;
 }
@@ -420,19 +422,20 @@ int addjob(struct job_t *jobs, pid_t pid, int state, char *cmdline)
 	    return 0;
 
     for (i = 0; i < MAXJOBS; i++) {
-	if (jobs[i].pid == 0) {
-	    jobs[i].pid = pid;
-	    jobs[i].state = state;
-	    jobs[i].jid = nextjid++;
-	    if (nextjid > MAXJOBS)
-		    nextjid = 1;
-	    strcpy(jobs[i].cmdline, cmdline);
-        printf("[%d] (%d) %s", jobs[i].jid, jobs[i].pid, jobs[i].cmdline);
-  	    if(verbose){
-	        printf("Added job [%d] %d %s\n", jobs[i].jid, jobs[i].pid, jobs[i].cmdline);
-        }
-        return 1;
-	}
+	    if (jobs[i].pid == 0) {
+	        jobs[i].pid = pid;
+	        jobs[i].state = state;
+	        jobs[i].jid = nextjid++;
+	        if (nextjid > MAXJOBS)
+		        nextjid = 1;
+	        strcpy(jobs[i].cmdline, cmdline);
+  	        if(verbose){
+	            printf("Added job [%d] %d %s\n", jobs[i].jid, jobs[i].pid, jobs[i].cmdline);
+            } else {
+                printf("[%d] (%d) %s", jobs[i].jid, jobs[i].pid, jobs[i].cmdline);
+            }
+            return 1;
+	    }
     }
     printf("Tried to create too many jobs\n");
     return 0;
