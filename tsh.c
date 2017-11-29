@@ -186,7 +186,6 @@ void eval(char *cmdline)
     //printf("%s | %d\n", cmdline, bg);
     if(argv[0] == NULL)
         return; // Ignore empty lines
-
     if(!builtin_cmd(argv)) {
         addSigBlock("SIGCHLD");
         pid = Fork();
@@ -195,8 +194,12 @@ void eval(char *cmdline)
                 printf("%s: Command not found.\n", argv[0]);
                 exit(0);
             }
-            printf("Gets past the Exec\n");
+            //printf("Gets past the Exec\n");
 
+        }
+        if(!bg) {
+            //printf("Gets in the waitfg(%d) if\n", pid);
+            waitfg(pid);
         }
         sigfillset(&mask);
         sigprocmask(SIG_BLOCK, &mask, &prev_mask);
@@ -204,11 +207,8 @@ void eval(char *cmdline)
         if(bg) {
             addjob(jobs, pid, BG, cmdline);
         }
+        //printf("This prints here.\n");
         sigprocmask(SIG_SETMASK, &prev_mask, NULL);
-
-        if (bg == 0){
-            waitfg(pid);
-        }
     }
     return;
 }
@@ -308,12 +308,14 @@ int parseline(const char *cmdline, char **argv)
  */
 int builtin_cmd(char **argv) 
 {
-    if(!strcmp(argv[0], "quit")){ // quit command
+    if(!strcmp(argv[0], "quit")) { // quit command
         exit(0);
-        printf("should be calling exit(0)");
     }
     if(!strcmp(argv[0], "&")) // Ignore singleton &
         return 1;
+    if(!strcmp(argv[0], "jobs")) {
+        listjobs(jobs);
+    }
     return 0;     /* not a builtin command */
 }
 
@@ -330,7 +332,10 @@ void do_bgfg(char **argv)
  */
 void waitfg(pid_t pid)
 {
+    //int fgjob = fgpid(jobs);
+    //printf("Pid of the foreground = %d\n", fgjob); 
     while(pid == fgpid(jobs)) {
+        //printf("%d", fgjob);
         sleep(1);
     }
     return;
@@ -350,13 +355,15 @@ void waitfg(pid_t pid)
 void sigchld_handler(int sig) 
 {
     int status;
-    int pid = waitpid(-1, &status, 0);
-    if (WIFEXITED(status)){
-        sigfillset(&mask);
-        sigprocmask(SIG_BLOCK, &mask, &prev_mask);
-        //will come back here later in lab
-        deletejob(jobs, pid);
-        sigprocmask(SIG_SETMASK, &prev_mask, NULL);
+    pid_t pid;
+    while((pid = waitpid(-1, &status, WNOHANG | WUNTRACED)) > 0) {
+        if (WIFEXITED(status)) {
+            sigfillset(&mask);
+            sigprocmask(SIG_BLOCK, &mask, &prev_mask);
+            //will come back here later in lab
+            deletejob(jobs, pid);
+            sigprocmask(SIG_SETMASK, &prev_mask, NULL);
+        } 
     }
     return;
 }
