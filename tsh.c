@@ -101,7 +101,7 @@ int main(int argc, char **argv)
 {
     char c;
     char cmdline[MAXLINE];
-    int omit_prompt = 1; /* emit prompt (default) */
+    int emit_prompt = 1; /* emit prompt (default) */
     
 
     /* Redirect stderr to stdout (so that driver will get all output
@@ -118,7 +118,7 @@ int main(int argc, char **argv)
             verbose = 1;
 	    break;
         case 'p':             /* don't print a prompt */
-            omit_prompt = 0;  /* handy for automatic testing */
+            emit_prompt = 0;  /* handy for automatic testing */
 	    break;
 	    default:
             usage();
@@ -142,7 +142,7 @@ int main(int argc, char **argv)
     while (1) {
 
 	/* Read command line */
-	if (omit_prompt) {
+	if (emit_prompt) {
 	    printf("%s", prompt);
 	    fflush(stdout);
 	}
@@ -183,6 +183,7 @@ void eval(char *cmdline)
 
     strcpy(buf, cmdline);
     bg = parseline(buf, argv);
+    //printf("%s | %d\n", cmdline, bg);
     if(argv[0] == NULL)
         return; // Ignore empty lines
 
@@ -200,10 +201,12 @@ void eval(char *cmdline)
         sigfillset(&mask);
         sigprocmask(SIG_BLOCK, &mask, &prev_mask);
         //Should the child process be in the BG?
-        addjob(jobs, pid, BG, cmdline);
+        if(bg) {
+            addjob(jobs, pid, BG, cmdline);
+        }
         sigprocmask(SIG_SETMASK, &prev_mask, NULL);
 
-        if (!bg == 0){
+        if (bg == 0){
             waitfg(pid);
         }
     }
@@ -431,7 +434,8 @@ int addjob(struct job_t *jobs, pid_t pid, int state, char *cmdline)
 	        strcpy(jobs[i].cmdline, cmdline);
   	        if(verbose){
 	            printf("Added job [%d] %d %s\n", jobs[i].jid, jobs[i].pid, jobs[i].cmdline);
-            } else {
+            } else if(state == BG){
+                //printf("%s\n", cmdline);
                 printf("[%d] (%d) %s", jobs[i].jid, jobs[i].pid, jobs[i].cmdline);
             }
             return 1;
