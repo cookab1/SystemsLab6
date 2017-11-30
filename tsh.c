@@ -190,8 +190,9 @@ void eval(char *cmdline)
         addSigBlock("SIGCHLD");
         pid = Fork();
         if(pid == 0){ // Child runs user job
-            if(Exec(argv[0], argv, environ) < 0) {
-                printf("%s: Command not found.\n", argv[0]);
+            int num = Exec(argv[0], argv, environ);
+            if (num < 0) {
+                printf("Num = %d | %s: Command not found.\n", num, argv[0]);
                 exit(0);
             }
             //printf("Gets past the Exec\n");
@@ -223,8 +224,9 @@ pid_t Fork(void){
 }
 
 int Exec(const char *filename, char *const argv[], char *const envp[]) {
-    if(execve(filename, argv, envp) < 0)
-        return -1;
+    int num;
+	if((num = execve(filename, argv, envp)) < 0)
+        return num;
     return 0;
 }
 
@@ -316,6 +318,7 @@ int builtin_cmd(char **argv)
         return 1;
     if(!strcmp(argv[0], "jobs")) {
         listjobs(jobs);
+		return 1;
     }
     return 0;     /* not a builtin command */
 }
@@ -530,24 +533,24 @@ void listjobs(struct job_t *jobs)
     int i;
     
     for (i = 0; i < MAXJOBS; i++) {
-	if (jobs[i].pid != 0) {
-	    printf("[%d] (%d) ", jobs[i].jid, jobs[i].pid);
-	    switch (jobs[i].state) {
-		case BG: 
-		    printf("Running ");
-		    break;
-		case FG: 
-		    printf("Foreground ");
-		    break;
-		case ST: 
-		    printf("Stopped ");
-		    break;
-	    default:
-		    printf("listjobs: Internal error: job[%d].state=%d ", 
-			   i, jobs[i].state);
-	    }
-	    printf("%s", jobs[i].cmdline);
-	}
+		if (jobs[i].pid != 0) {
+			printf("[%d] (%d) ", jobs[i].jid, jobs[i].pid);
+			switch (jobs[i].state) {
+				case BG: 
+					printf("Running ");
+					break;
+				case FG: 
+					printf("Foreground ");
+					break;
+				case ST: 
+					printf("Stopped ");
+					break;
+				default:
+					printf("listjobs: Internal error: job[%d].state=%d ", 
+					   i, jobs[i].state);
+			}
+			printf("%s", jobs[i].cmdline);
+		}
     }
 }
 /******************************
