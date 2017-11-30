@@ -183,33 +183,28 @@ void eval(char *cmdline)
 
     strcpy(buf, cmdline);
     bg = parseline(buf, argv);
-    //printf("%s | %d\n", cmdline, bg);
     if(argv[0] == NULL)
         return; // Ignore empty lines
     if(!builtin_cmd(argv)) {
-        addSigBlock("SIGCHLD");
+        //addSigBlock("SIGCHLD");
         pid = Fork();
+		//printf("gets to the fork\n");
         if(pid == 0){ // Child runs user job
-            int num = Exec(argv[0], argv, environ);
-            if (num < 0) {
-                printf("Num = %d | %s: Command not found.\n", num, argv[0]);
+			printf("at the setpgid function\n");
+			setpgid(0, 0);
+            if(Exec(argv[0], argv, environ) < 0) {
+                printf("%s: Command not found.\n", argv[0]);
                 exit(0);
             }
-            //printf("Gets past the Exec\n");
         }
         if(!bg) {
-            //int status;
-            //printf("Gets in the waitfg(%d) if\n", pid);
-            //waitpid(pid, &status, 0); //This needs to be the pid of the foreground? process. How?
             waitfg(pid);
         }
         sigfillset(&mask);
         sigprocmask(SIG_BLOCK, &mask, &prev_mask);
-        //Should the child process be in the BG?
         if(bg) {
             addjob(jobs, pid, BG, cmdline);
         }
-        //printf("This prints here.\n");
         sigprocmask(SIG_SETMASK, &prev_mask, NULL);
     }
     return;
@@ -224,9 +219,8 @@ pid_t Fork(void){
 }
 
 int Exec(const char *filename, char *const argv[], char *const envp[]) {
-    int num;
-	if((num = execve(filename, argv, envp)) < 0)
-        return num;
+    if(execve(filename, argv, envp) < 0)
+        return -1;
     return 0;
 }
 
@@ -363,19 +357,26 @@ void waitfg(pid_t pid)
 void sigchld_handler(int sig) 
 {
     int status;
+	//pid_t pid = waitpid(-1, &status, WNOHANG | WUNTRACED);
+	printf("got here!! sigchld_handler\n");
     pid_t pid;
     while((pid = waitpid(-1, &status, WNOHANG | WUNTRACED)) > 0) {
         if (WIFEXITED(status)) {
+			printf("Exited Normally.\n");
             sigfillset(&mask);
             sigprocmask(SIG_BLOCK, &mask, &prev_mask);
-            //will come back here later in lab
             deletejob(jobs, pid);
             sigprocmask(SIG_SETMASK, &prev_mask, NULL);
-        } 
+        }
     }
-    return;
+	if(WTERMSIG(status) == 0){
+		printf("Job [%d] (%d) terminated by signal 2\n", pid2jid(pid), pid);
+        sigfillset(&mask);
+        sigprocmask(SIG_BLOCK, &mask, &prev_mask);
+        deletejob(jobs, pid);
+        sigprocmask(SIG_SETMASK, &prev_mask, NULL);
+	}
 }
-
 /* 
  * sigint_handler - The kernel sends a SIGINT to the shell whenver the
  *    user types ctrl-c at the keyboard.  Catch it and send it along
@@ -383,7 +384,11 @@ void sigchld_handler(int sig)
  */
 void sigint_handler(int sig) 
 {
-    return;
+	//printf("got here!!sigint_handler\n");
+	pid_t pid = fgpid(jobs);
+	if(pid != 0) {
+		kill(-pid, SIGINT);
+	}
 }
 
 /*
@@ -533,24 +538,24 @@ void listjobs(struct job_t *jobs)
     int i;
     
     for (i = 0; i < MAXJOBS; i++) {
-		if (jobs[i].pid != 0) {
-			printf("[%d] (%d) ", jobs[i].jid, jobs[i].pid);
-			switch (jobs[i].state) {
-				case BG: 
-					printf("Running ");
-					break;
-				case FG: 
-					printf("Foreground ");
-					break;
-				case ST: 
-					printf("Stopped ");
-					break;
-				default:
-					printf("listjobs: Internal error: job[%d].state=%d ", 
-					   i, jobs[i].state);
-			}
-			printf("%s", jobs[i].cmdline);
-		}
+	if (jobs[i].pid != 0) {
+	    printf("[%d] (%d) ", jobs[i].jid, jobs[i].pid);
+	    switch (jobs[i].state) {
+		case BG: 
+		    printf("Running ");
+		    break;
+		case FG: 
+		    printf("Foreground ");
+		    break;
+		case ST: 
+		    printf("Stopped ");
+		    break;
+	    default:
+		    printf("listjobs: Internal error: job[%d].state=%d ", 
+			   i, jobs[i].state);
+	    }
+	    printf("%s", jobs[i].cmdline);
+	}
     }
 }
 /******************************
