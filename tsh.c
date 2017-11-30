@@ -195,10 +195,11 @@ void eval(char *cmdline)
                 exit(0);
             }
             //printf("Gets past the Exec\n");
-
         }
         if(!bg) {
+            //int status;
             //printf("Gets in the waitfg(%d) if\n", pid);
+            //waitpid(pid, &status, 0); //This needs to be the pid of the foreground? process. How?
             waitfg(pid);
         }
         sigfillset(&mask);
@@ -334,10 +335,14 @@ void waitfg(pid_t pid)
 {
     //int fgjob = fgpid(jobs);
     //printf("Pid of the foreground = %d\n", fgjob); 
+    /*
     while(pid == fgpid(jobs)) {
         //printf("%d", fgjob);
         sleep(1);
     }
+    */
+    int status;
+    waitpid(pid, &status, 0);
     return;
 }
 
