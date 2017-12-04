@@ -190,6 +190,7 @@ void eval(char *cmdline)
         addSigBlock("SIGCHLD");
         pid = Fork();
         if(pid == 0){ // Child runs user job
+            setpgid(0,0);
             int num = Exec(argv[0], argv, environ);
             if (num < 0) {
                 printf("Num = %d | %s: Command not found.\n", num, argv[0]);
@@ -201,6 +202,8 @@ void eval(char *cmdline)
             //int status;
             //printf("Gets in the waitfg(%d) if\n", pid);
             //waitpid(pid, &status, 0); //This needs to be the pid of the foreground? process. How?
+            addjob(jobs, pid, FG, cmdline);
+            restoreSigBlock("SIGCHLD");
             waitfg(pid);
         }
         sigfillset(&mask);
@@ -362,18 +365,30 @@ void waitfg(pid_t pid)
  */
 void sigchld_handler(int sig) 
 {
+   
     int status;
+    //pid_t pid = waitpid(-1, &status, WNOHANG | WUNTRACED);
+    printf("got here!! sigchld_handler\n");
     pid_t pid;
-    while((pid = waitpid(-1, &status, WNOHANG | WUNTRACED)) > 0) {
+
+    while((pid = waitpid(-1, &status, WNOHANG | WUNTRACED)) > 0) { //WNOHANG | WUNTRACED
         if (WIFEXITED(status)) {
+            printf("Exited Normally.\n");
             sigfillset(&mask);
             sigprocmask(SIG_BLOCK, &mask, &prev_mask);
-            //will come back here later in lab
             deletejob(jobs, pid);
             sigprocmask(SIG_SETMASK, &prev_mask, NULL);
-        } 
+        } else {
+            int num = WTERMSIG(status); //Termination code
+            printf("Job [%d] (%d) terminated by signal %d\n", pid2jid(pid), pid, num);
+            sigfillset(&mask);
+            sigprocmask(SIG_BLOCK, &mask, &prev_mask);
+            deletejob(jobs, pid);
+            sigprocmask(SIG_SETMASK, &prev_mask, NULL);
+        }
     }
-    return;
+    printf("Termination code = %d\n", WTERMSIG(status));
+    //perror("sigchild_handler");
 }
 
 /* 
@@ -383,7 +398,12 @@ void sigchld_handler(int sig)
  */
 void sigint_handler(int sig) 
 {
-    return;
+    //printf("got here!!sigint_handler\n");
+    pid_t pid = fgpid(jobs);
+    printf("Pid before kill = %d\n", pid);
+    if(pid != 0) {
+        kill(pid, SIGINT);
+    }
 }
 
 /*
