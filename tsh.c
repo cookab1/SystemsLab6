@@ -189,6 +189,8 @@ void eval(char *cmdline)
     if(!builtin_cmd(argv)) {
         addSigBlock("SIGCHLD");
         pid = Fork();
+        //if(!bg)
+            //addjob(jobs, pid, FG, cmdline);
         if(pid == 0){ // Child runs user job
             setpgid(0,0);
             int num = Exec(argv[0], argv, environ);
@@ -202,13 +204,16 @@ void eval(char *cmdline)
             //int status;
             //printf("Gets in the waitfg(%d) if\n", pid);
             //waitpid(pid, &status, 0); //This needs to be the pid of the foreground? process. How?
+            
             addjob(jobs, pid, FG, cmdline);
             restoreSigBlock("SIGCHLD");
             waitfg(pid);
+        } else {
+            restoreSigBlock("SIGCHLD");
         }
+
         sigfillset(&mask);
         sigprocmask(SIG_BLOCK, &mask, &prev_mask);
-        //Should the child process be in the BG?
         if(bg) {
             addjob(jobs, pid, BG, cmdline);
         }
@@ -341,14 +346,11 @@ void waitfg(pid_t pid)
 {
     //int fgjob = fgpid(jobs);
     //printf("Pid of the foreground = %d\n", fgjob); 
-    /*
+    
     while(pid == fgpid(jobs)) {
         //printf("%d", fgjob);
         sleep(1);
     }
-    */
-    int status;
-    waitpid(pid, &status, 0);
     return;
 }
 
@@ -368,12 +370,12 @@ void sigchld_handler(int sig)
    
     int status;
     //pid_t pid = waitpid(-1, &status, WNOHANG | WUNTRACED);
-    printf("got here!! sigchld_handler\n");
+    //printf("got here!! sigchld_handler\n");
     pid_t pid;
 
     while((pid = waitpid(-1, &status, WNOHANG | WUNTRACED)) > 0) { //WNOHANG | WUNTRACED
         if (WIFEXITED(status)) {
-            printf("Exited Normally.\n");
+            //printf("Exited Normally.\n");
             sigfillset(&mask);
             sigprocmask(SIG_BLOCK, &mask, &prev_mask);
             deletejob(jobs, pid);
@@ -387,7 +389,8 @@ void sigchld_handler(int sig)
             sigprocmask(SIG_SETMASK, &prev_mask, NULL);
         }
     }
-    printf("Termination code = %d\n", WTERMSIG(status));
+    //printf("Pid of the terminated process = %d\n", pid);
+    //printf("Termination code = %d\n", WTERMSIG(status));
     //perror("sigchild_handler");
 }
 
@@ -400,7 +403,7 @@ void sigint_handler(int sig)
 {
     //printf("got here!!sigint_handler\n");
     pid_t pid = fgpid(jobs);
-    printf("Pid before kill = %d\n", pid);
+    //printf("Pid before kill = %d\n", pid);
     if(pid != 0) {
         kill(pid, SIGINT);
     }
