@@ -63,6 +63,8 @@ sigset_t mask, prev_mask;  /*Holds the mask and previous mask for signal blockin
 void eval(char *cmdline);
 int builtin_cmd(char **argv);
 void do_bgfg(char **argv);
+int bgfg_errors(char **argv);
+int isNum(char *arg);
 void waitfg(pid_t pid);
 
 void sigchld_handler(int sig);
@@ -196,7 +198,7 @@ void eval(char *cmdline)
             setpgid(0,0);
             int num = Exec(argv[0], argv, environ);
             if (num < 0) {
-                printf("Num = %d | %s: Command not found.\n", num, argv[0]);
+                printf("%s: Command not found\n", argv[0]);
                 exit(0);
             }
             //printf("Gets past the Exec\n");
@@ -354,6 +356,8 @@ void do_bgfg(char **argv)
 	struct job_t *job;
 	char isJid;
 	int ID;
+	if(bgfg_errors(argv))
+		return;
     if(argv[1][0] == '%') { //passed in a jid in format "cmd %1"
 		sscanf(argv[1], "%c%d", &isJid, &ID);
 		job = getjobjid(jobs, ID);
@@ -391,6 +395,48 @@ void do_bgfg(char **argv)
 			waitfg(fgpid(jobs));
 		}
 	}
+}
+
+//Error Checking for the do_bgfg function.
+int bgfg_errors(char **argv) 
+{
+	int id = 0;
+	char isJid;
+	
+	if(argv[1] == NULL) {
+		printf("%s command requires PID or %%jobid argument\n", argv[0]);
+		return 1;
+	} else if(argv[1][0] == '%') {
+		if(!isNum(argv[1] + 1)) {
+			printf("%s: argument must be a PID or %%jobid\n", argv[0]);
+			return 1;
+		}
+		sscanf(argv[1], "%c%d", &isJid, &id);
+		if(getjobjid(jobs, id) == NULL) {
+			printf("%s: No such job\n", argv[1]);
+			return 1;
+		}
+	} else if(!isNum(argv[1])){
+		printf("%s: argument must be a PID or %%jobid\n", argv[0]);
+		return 1;
+	} else {
+		sscanf(argv[1], "%d", &id);
+		if(getjobpid(jobs, id) == NULL) {
+			printf("(%d): No such process\n", id);
+			return 1;
+		}
+	}
+	return 0;
+}
+
+int isNum(char *arg) {
+	int i;
+	for(i = 0; arg[i] != '\0'; i++) {
+		if(arg[i] < 0x30 || arg[i] > 0x39)
+			return 0;
+	}
+	return 1;
+	
 }
 
 /* 
