@@ -91,6 +91,7 @@ typedef void handler_t(int);
 handler_t *Signal(int signum, handler_t *handler);
 pid_t Fork(void);
 int Exec(const char *, char *const [], char *const []);
+void blockAllSigs();
 void addSigBlock(char []);
 void restoreSigBlock();
 
@@ -212,13 +213,12 @@ void eval(char *cmdline)
             restoreSigBlock("SIGCHLD");
         }
 
-        sigfillset(&mask);
-        sigprocmask(SIG_BLOCK, &mask, &prev_mask);
+        blockAllSigs();
         if(bg) {
             addjob(jobs, pid, BG, cmdline);
         }
         //printf("This prints here.\n");
-        sigprocmask(SIG_SETMASK, &prev_mask, NULL);
+		restoreSigBlock();
     }
     return;
 }
@@ -236,6 +236,11 @@ int Exec(const char *filename, char *const argv[], char *const envp[]) {
 	if((num = execve(filename, argv, envp)) < 0)
         return num;
     return 0;
+}
+
+void blockAllSigs() {
+    sigfillset(&mask);
+    sigprocmask(SIG_BLOCK, &mask, &prev_mask);
 }
 
 void addSigBlock(char signal[]){
@@ -328,6 +333,14 @@ int builtin_cmd(char **argv)
         listjobs(jobs);
 		return 1;
     }
+    if(!strcmp(argv[0], "bg")) { // restart a process in the background
+        do_bgfg(argv);
+		return 1;
+    }
+    if(!strcmp(argv[0], "fg")) { // restart a process in the foreground
+        do_bgfg(argv);
+		return 1;        
+    }
     return 0;     /* not a builtin command */
 }
 
@@ -336,7 +349,36 @@ int builtin_cmd(char **argv)
  */
 void do_bgfg(char **argv) 
 {
-    return;
+	//printf("gets the the bgfg function\n");
+	//printf("%c | %d\n", isJid, ID);
+	struct job_t *job;
+	char isJid;
+	int ID;
+    if(argv[1][0] == '%') { //passed in a jid in format "cmd %1"
+		sscanf(argv[1], "%c%d", &isJid, &ID);
+		job = getjobjid(jobs, ID);
+		if(!strcmp(argv[0], "bg")) {
+			job->state = BG;
+			kill(-(job->pid), SIGCONT);
+		} else {
+			
+		}
+	} else { //passed in a pid in format "cmd 123"
+		sscanf(argv[1], "%d", &ID);
+		job = getjobpid(jobs, ID);
+		if(!strcmp(argv[0], "bg")) {
+			job->state = BG;
+			kill(-(job->pid), SIGCONT);
+		} else {
+			if(job->state == ST) {
+				//waitfg();
+				kill(-(job->pid), SIGCONT);
+			}
+			//waitfg();
+			job->state = FG; 
+		}
+	}
+	printf("[%d] (%d) %s", job->jid, job->pid, job->cmdline);
 }
 
 /* 
@@ -376,18 +418,22 @@ void sigchld_handler(int sig)
     while((pid = waitpid(-1, &status, WNOHANG | WUNTRACED)) > 0) { //WNOHANG | WUNTRACED
         if (WIFEXITED(status)) {
             //printf("Exited Normally.\n");
-            sigfillset(&mask);
-            sigprocmask(SIG_BLOCK, &mask, &prev_mask);
+            blockAllSigs();
             deletejob(jobs, pid);
-            sigprocmask(SIG_SETMASK, &prev_mask, NULL);
-        } else {
-            int num = WTERMSIG(status); //Termination code
-            printf("Job [%d] (%d) terminated by signal %d\n", pid2jid(pid), pid, num);
-            sigfillset(&mask);
-            sigprocmask(SIG_BLOCK, &mask, &prev_mask);
+            restoreSigBlock();
+        } else if(WTERMSIG(status) == SIGINT) {
+            printf("Job [%d] (%d) terminated by signal %d\n", pid2jid(pid), pid, 2);
+            blockAllSigs();
             deletejob(jobs, pid);
-            sigprocmask(SIG_SETMASK, &prev_mask, NULL);
-        }
+            restoreSigBlock();
+        } else if(WIFSTOPPED(status)) {
+			printf("Job [%d] (%d) stopped by signal %d\n", pid2jid(pid), pid, WSTOPSIG(status));
+			struct job_t *job = getjobpid(jobs, pid);
+			job->state = ST;
+		}
+		/*else {
+			printf("Gets to the else!\n");
+		}*/
     }
     //printf("Pid of the terminated process = %d\n", pid);
     //printf("Termination code = %d\n", WTERMSIG(status));
