@@ -1,0 +1,424 @@
+./sdriver.pl -t trace11.txt -s ./tshref -a "-p"
+#
+# trace11.txt - Forward SIGINT to every process in foreground process group
+#
+tsh> ./mysplit 4
+Job [1] (25768) terminated by signal 2
+tsh> /bin/ps a
+  PID TTY      STAT   TIME COMMAND
+  551 pts/105  S      0:01 ./myspin 100000
+  723 pts/80   Ss+    0:00 -tcsh
+  749 pts/81   Ss     0:00 -tcsh
+  764 pts/81   S+     0:02 vim excess.cpp
+  935 pts/3    Ss     0:00 -zsh
+  941 pts/137  Ss+    0:00 -bash
+ 1087 pts/127  Ss+    0:00 -tcsh
+ 1124 pts/116  Ss+    0:00 -tcsh
+ 1178 pts/162  Ss+    0:00 -tcsh
+ 1294 pts/208  Ss+    0:00 -bash
+ 1366 pts/163  Ss     0:00 -bash
+ 1536 pts/126  Ss     0:00 -bash
+ 1543 pts/186  Ss+    0:00 -tcsh
+ 1569 pts/126  S+     0:01 fish
+ 1701 pts/107  Ss+    0:00 -tcsh
+ 1744 pts/157  Ss+    0:00 -tcsh
+ 1747 pts/123  Ss     0:00 -tcsh
+ 2157 pts/70   Ss     0:00 -tcsh
+ 2193 pts/100  Ss+    0:00 -tcsh
+ 2197 pts/223  S      0:18 ./tsh -p
+ 2597 pts/105  S      0:01 ./myspin 100000
+ 2865 pts/105  S      0:01 ./myspin 1000000
+ 3268 pts/202  Ss     0:00 -bash
+ 3296 pts/205  Ss     0:00 -bash
+ 3407 tty2     Ss+    0:00 /sbin/mingetty /dev/tty2
+ 3409 tty3     Ss+    0:00 /sbin/mingetty /dev/tty3
+ 3412 tty4     Ss+    0:00 /sbin/mingetty /dev/tty4
+ 3414 tty5     Ss+    0:00 /sbin/mingetty /dev/tty5
+ 3416 tty6     Ss+    0:00 /sbin/mingetty /dev/tty6
+ 3437 pts/105  S      0:01 ./myspin 1000000
+ 3447 tty1     Ssl+   7:43 /usr/bin/Xorg :0 -br -verbose -audit 4 -auth /var/run/gdm/auth-for-gdm-s8iTnj/database -nolisten tcp vt1
+ 3581 pts/8    S      0:17 ./tsh -p
+ 3624 pts/105  S      0:01 ./myspin 100000
+ 3650 pts/0    Ss     0:00 -zsh
+ 3651 pts/25   S+     0:00 vim MemoryStage.C
+ 3688 pts/0    S+     0:01 /bin/zsh
+ 3805 pts/125  S+     0:00 vim ExecuteStage.C
+ 3903 pts/105  S      0:01 ./myspin 1000000
+ 3913 pts/105  S      0:01 ./myspin 100000
+ 3988 pts/146  Ss+    0:00 -bash
+ 4184 pts/15   Ss+    0:00 -bash
+ 4215 pts/47   Ss+    0:00 -bash
+ 4504 pts/29   Ss+    0:00 -tcsh
+ 4654 pts/105  S      0:01 ./myspin 1000000
+ 4690 pts/34   Ss+    0:00 -tcsh
+ 4691 pts/152  Ss+    0:00 -tcsh
+ 4705 pts/153  Ss     0:00 -tcsh
+ 4784 pts/94   Ss+    0:00 -bash
+ 4849 pts/38   Ss+    0:00 -tcsh
+ 4907 pts/20   Ss+    0:00 -tcsh
+ 5255 pts/50   S+     0:01 vim SymbolList.C
+ 5379 pts/147  Ss+    0:00 -bash
+ 5405 pts/52   Ss+    0:00 -bash
+ 5432 pts/84   Ss     0:00 -bash
+ 5605 pts/105  S      0:01 ./myspin 10000000
+ 5755 pts/6    Ss+    0:00 -bash
+ 5851 pts/14   Ss     0:00 -bash
+ 5880 pts/14   S      0:00 fish
+ 5894 pts/14   S+     0:02 fish
+ 5998 pts/51   Ss+    0:00 -tcsh
+ 6042 pts/237  Ss+    0:00 -tcsh
+ 6211 pts/209  Ss+    0:00 -tcsh
+ 6273 pts/163  S+     0:00 vim AC_RDP.java
+ 6760 pts/8    Ss+    0:00 -tcsh
+ 6811 pts/105  S      0:01 ./myspin 1000000
+ 7000 pts/200  S+     0:13 vim tsh.c
+ 7029 pts/64   Ss     0:00 -bash
+ 7056 pts/64   S      0:00 fish
+ 7172 pts/223  Ss     0:00 -tcsh
+ 7341 pts/168  Ss     0:00 -bash
+ 7550 pts/5    Ss     0:00 -tcsh
+ 7606 pts/105  S      0:01 ./myspin 100000
+ 7693 pts/8    S      0:18 ./tsh -p
+ 7714 pts/124  T      0:34 /usr/bin/perl checktsh.pl -c 8
+ 7891 pts/207  Ss     0:00 -tcsh
+ 7895 pts/69   Ss     0:00 -bash
+ 7924 pts/86   Ss+    0:00 -tcsh
+ 7980 pts/223  S      0:17 ./tsh -p
+ 7983 pts/223  Z      0:00 [echo] <defunct>
+ 7988 pts/69   S+     0:00 vim NgramList.C
+ 8282 pts/129  Ss     0:00 -bash
+ 8312 pts/129  S      0:01 fish
+ 8579 pts/151  S+     0:01 vim eliza.fs
+ 8584 pts/25   Ss     0:00 -tcsh
+ 8599 pts/62   Ss     0:00 -tcsh
+ 8618 pts/199  Ss     0:00 -tcsh
+ 8888 pts/172  Ss+    0:00 -tcsh
+ 8990 pts/226  S+     0:15 vim FileHandler.C
+ 9092 pts/74   Ss+    0:00 -bash
+ 9193 pts/82   Ss+    0:00 -tcsh
+ 9213 pts/76   Ss     0:00 -bash
+ 9257 pts/92   Ss+    0:00 -bash
+ 9284 pts/87   Ss     0:00 -tcsh
+ 9298 pts/84   Sl+    0:00 mono eliza.exe
+ 9382 pts/238  Ss+    0:00 -tcsh
+ 9468 pts/61   Ss+    0:00 -bash
+ 9508 pts/33   Ss     0:00 -tcsh
+ 9539 pts/60   Ss+    0:00 -bash
+ 9551 pts/63   Ss     0:00 -bash
+ 9720 pts/115  Ss     0:00 -zsh
+ 9734 pts/10   Ss+    0:00 -bash
+ 9747 pts/115  S      0:00 sudo su
+ 9748 pts/115  S      0:00 su
+ 9749 pts/115  S      0:01 ksh
+ 9772 pts/115  S      0:00 /bin/bash
+ 9774 pts/93   Ss+    0:00 -bash
+ 9801 pts/106  Ss+    0:00 -bash
+ 9880 pts/63   Tl     0:00 emacs
+ 9883 pts/140  Ss+    0:00 -bash
+ 9957 pts/63   Tl     0:00 emacs
+10255 pts/76   S+     0:00 vim main.C
+10376 pts/103  Ss+    0:00 -tcsh
+10477 pts/105  S      0:01 ./myspin 100000
+10522 pts/135  Ss     0:00 -tcsh
+10526 pts/184  S+     0:00 vim Simulate.C
+10592 pts/174  Ss+    0:00 -tcsh
+10608 pts/217  Ss     0:00 -tcsh
+10644 pts/139  Ss+    0:00 -tcsh
+10683 pts/231  Ss     0:00 -tcsh
+10727 pts/232  Ss     0:00 -tcsh
+10889 pts/91   Ss     0:00 -tcsh
+10923 pts/167  Ss+    0:00 -tcsh
+10968 pts/63   Tl     0:00 emacs init.el
+11047 pts/59   S+     0:08 vim NgramList.C
+11081 pts/176  Ss     0:00 -tcsh
+11156 pts/67   S+     0:00 vim confirm.html
+11267 pts/28   Ss     0:00 -bash
+11403 pts/154  S+     0:00 vim AC_RDP.java
+11451 pts/158  Ss+    0:00 -bash
+11484 pts/153  S+     0:00 vim DecodeStage.C
+11499 pts/218  Ss+    0:00 -tcsh
+11503 pts/210  Ss     0:00 -bash
+11520 pts/231  S+     0:00 vim Basic.html
+11524 pts/8    S      0:17 ./tsh -p
+11527 pts/232  S+     0:00 vim Basic.js
+11536 pts/219  Ss     0:00 -tcsh
+11539 pts/159  Ss+    0:00 -tcsh
+11573 pts/184  Ss     0:00 -tcsh
+11681 pts/48   S+     0:00 vim SymbolList.C
+11983 pts/105  S      0:01 ./myspin 100000
+11995 pts/36   Ss     0:00 -bash
+12022 pts/42   Ss     0:00 -bash
+12043 pts/176  Sl+    4:36 mono --gc=sgen /usr/local/lib/pkgconfig/../../lib/mono//4.0/fsi.exe
+12111 pts/177  Ss     0:00 -bash
+12134 pts/161  Ss+    0:00 -tcsh
+12138 pts/36   S+     0:01 vim index.css
+12155 pts/129  S+     0:00 git log
+12156 pts/129  S+     0:00 less
+12159 pts/198  Ss     0:00 -tcsh
+12169 pts/42   S+     0:02 vim dOI.html
+12373 pts/9    Ss+    0:00 -tcsh
+12536 pts/220  Ss     0:00 -tcsh
+12551 pts/222  Ss     0:00 -tcsh
+12552 pts/115  Sl    64:56 /usr/bin/java -Djava.util.logging.config.file=/usr/local/tomcat/conf/logging.properties -Djava.awt.headless=true -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djava.endorsed.dirs=/usr/local/tomcat/endorsed -classpath /usr/local/tomcat/bin/bootstrap.jar:/usr/local/tomcat/bin/tomcat-juli.jar -Dcatalina.base=/usr/local/tomcat -Dcatalina.home=/usr/local/tomcat -Djava.io.tmpdir=/usr/local/tomcat/temp org.apache.catalina.startup.Bootstrap start
+12686 pts/211  Ss     0:00 -bash
+12701 pts/13   Ss     0:00 -tcsh
+12717 pts/13   S+     0:01 vim pageA.js
+12740 pts/5    S+     0:00 vim scheduleapage.html
+12803 pts/63   Tl     0:00 emacs init.el
+12807 pts/39   Ss     0:00 -tcsh
+12849 pts/40   Ss     0:00 -tcsh
+12872 pts/40   S+     0:00 vim celebs.html
+12928 pts/39   S+     0:00 vim celebs.css
+12948 pts/63   Tl     0:00 emacs init.el
+13036 pts/123  S+     0:00 vim strings.asm
+13074 pts/75   Ss+    0:00 -tcsh
+13516 pts/222  S+     3:19 kak WritebackStage.C
+13890 pts/63   Tl     0:00 emacs init.el
+13922 pts/223  S+     5:25 kak tsh.c
+14011 pts/108  Ss+    0:00 -bash
+14036 pts/8    S      0:15 ./tsh -p
+14039 pts/8    Z      0:00 [echo] <defunct>
+14086 pts/62   S+     0:04 vim FetchStage.C
+14107 pts/11   Ss+    0:00 -tcsh
+14121 pts/12   Ss+    0:01 -tcsh
+14136 pts/45   Ss+    0:00 -tcsh
+14450 pts/220  S+     3:18 kak MemoryStage.C
+14514 pts/63   Tl     0:00 emacs init.el
+14602 pts/135  S+     3:15 kak ExecuteStage.C
+14685 pts/142  S+     0:00 vim AC_Lexer.java
+14729 pts/180  Ss+    0:00 -bash
+14739 pts/68   Ss     0:00 -bash
+14765 pts/181  Ss+    0:00 -bash
+14794 pts/219  S+     3:19 kak DecodeStage.C
+14819 pts/63   Tl     0:00 emacs init.el
+15047 pts/124  S      0:17 ./tsh -p
+15319 pts/124  Ss+    0:00 -tcsh
+15388 pts/72   Ss     0:00 -tcsh
+15502 pts/72   S+     0:00 tmux attach
+15609 pts/198  S+     0:00 vim tsh.c
+15882 pts/33   S+     3:20 kak FetchStage.C
+15949 pts/199  S+     0:02 vim Parser1.java
+16004 pts/114  Ss+    0:00 -tcsh
+16043 pts/217  S+     3:15 kak makefile
+16110 pts/200  Ss     0:00 -bash
+16132 pts/63   Tl     0:01 emacs init.el
+16238 pts/200  S      0:07 fish
+16271 pts/91   S+     0:00 vim index.html
+16408 pts/65   Ss+    0:00 -bash
+16439 pts/73   Ss+    0:00 -bash
+16696 pts/17   Ss+    0:00 -tcsh
+16723 pts/228  Ss+    0:00 -tcsh
+16915 pts/79   Ss+    0:00 -bash
+16980 pts/175  Ss+    0:00 -tcsh
+17055 pts/173  Ss+    0:00 -bash
+17086 pts/215  Ss+    0:00 -tcsh
+17126 pts/8    S      0:17 ./tsh -p
+17140 pts/128  Ss     0:00 -tcsh
+17290 pts/105  S      0:01 ./myspin 1000000
+17867 pts/8    S      0:16 ./tsh -p
+17965 pts/223  S      0:16 ./tsh -p
+17967 pts/223  Z      0:00 [echo] <defunct>
+17971 pts/57   Ss+    0:00 -tcsh
+18112 pts/109  Ss+    0:00 -tcsh
+18126 pts/111  Ss     0:00 -tcsh
+18142 pts/105  S      0:01 ./myspin 100000
+18151 pts/111  S+     0:00 vim problem1.html
+18185 pts/112  Ss+    0:00 -tcsh
+18199 pts/113  Ss+    0:00 -tcsh
+18201 pts/89   Ss+    0:00 -tcsh
+18225 pts/130  Ss+    0:00 -tcsh
+18269 pts/117  Ss+    0:00 -tcsh
+18283 pts/118  Ss+    0:00 -tcsh
+18387 pts/119  S+     0:06 vim confirm.html
+18404 pts/206  Ss+    0:00 -tcsh
+18462 pts/177  S+     0:00 vim temp.C
+18489 pts/105  S      0:01 ./myspin 1000000
+18522 pts/67   Ss     0:00 -bash
+18538 pts/31   Ss     0:00 -tcsh
+18545 pts/71   Ss+    0:00 -tcsh
+18560 pts/98   Ss     0:00 -tcsh
+18583 pts/98   S+     0:00 vim 2017-10-05/
+18699 pts/136  Ss+    0:00 -tcsh
+18727 pts/53   Ss+    0:00 -tcsh
+18830 pts/63   Tl     0:00 emacs init.el
+18916 pts/133  Ss+    0:00 -tcsh
+18991 pts/187  Ss+    0:00 -tcsh
+19000 pts/4    Ss     0:00 -tcsh
+19011 pts/151  Ss     0:00 -bash
+19112 pts/23   Ss+    0:00 -bash
+19142 pts/99   Ss+    0:00 -tcsh
+19324 pts/105  S      0:01 ./myspin 1000000
+19338 pts/31   S+     0:00 vim celebs.html
+19395 pts/156  Ss     0:00 -tcsh
+19410 pts/156  S+     0:00 vim asumr.yo
+19420 pts/70   S+     0:00 vim Parser1.java
+19616 pts/141  Ss     0:00 -tcsh
+19637 pts/28   S+     0:00 vim sample.txt
+19649 pts/141  S+     0:00 ssh -l davisjb2 152.10.212.142
+19879 pts/174  S      0:13 ./tsh -p
+19880 pts/174  Z      0:00 [echo] <defunct>
+20104 pts/63   Tl     0:02 emacs init.el
+20837 pts/26   S+     0:00 vim Wheels.java
+20903 pts/182  Ss+    0:00 -tcsh
+20953 pts/115  S      0:00 sudo su -
+20980 pts/115  S      0:00 su -
+20987 pts/105  S      0:01 ./myspin 100000
+21003 pts/115  S      0:00 -ksh
+21021 pts/85   Ss     0:00 -bash
+21053 pts/88   Ss     0:00 -bash
+21123 pts/95   Ss     0:00 -bash
+21352 pts/95   S+     0:00 vim heatindex.js
+21354 pts/88   S+     0:00 vim heatindex.html
+21366 pts/19   Ss     0:00 -bash
+21410 pts/19   S+     0:00 vim mydog.js
+21420 pts/63   Sl+    0:00 emacs init.el
+21606 pts/68   S+     0:00 man man
+21609 pts/68   S+     0:00 sh -c (cd "/usr/share/man/overrides" && (echo ".ll 12.0i"; echo ".nr LL 12.0i"; echo ".pl 1100i"; /usr/bin/gunzip -c '/usr/share/man/overrides/man1/man.1.gz'; echo ".\\\""; echo ".pl \n(nlu+10") | /usr/bin/gtbl | /usr/bin/nroff -c -mandoc 2>/dev/null | /usr/bin/less -is)
+21610 pts/68   S+     0:00 sh -c (cd "/usr/share/man/overrides" && (echo ".ll 12.0i"; echo ".nr LL 12.0i"; echo ".pl 1100i"; /usr/bin/gunzip -c '/usr/share/man/overrides/man1/man.1.gz'; echo ".\\\""; echo ".pl \n(nlu+10") | /usr/bin/gtbl | /usr/bin/nroff -c -mandoc 2>/dev/null | /usr/bin/less -is)
+21615 pts/68   S+     0:00 /usr/bin/less -is
+21742 pts/205  S+    22:56 kak MemoryStage.C
+21795 pts/188  Ss+    0:00 -tcsh
+21838 pts/190  Ss+    0:00 -tcsh
+21847 pts/192  Ss     0:00 -tcsh
+21880 pts/191  Ss+    0:00 -tcsh
+21909 pts/192  S+     0:00 vim trans.c
+22226 pts/85   S+     0:00 vim dog.html
+22320 pts/43   Ss     0:00 -bash
+22340 pts/26   Ss     0:00 -tcsh
+22347 pts/44   Ss     0:00 -bash
+22376 pts/43   S+     0:01 vim dOI.html
+22593 pts/8    S      0:17 ./tsh -p
+22652 pts/105  S      0:01 ./myspin 100000
+22763 pts/48   Ss     0:02 -bash
+22853 pts/49   Ss+    0:00 -bash
+22885 pts/50   Ss     0:00 -bash
+22951 pts/223  S      0:16 ./tsh -p
+22955 pts/223  Z      0:00 [echo] <defunct>
+23486 pts/4    S+     0:28 vim interpreter.hs
+23502 pts/8    S      0:18 ./tsh -p
+23764 pts/77   Ss     0:00 -tcsh
+23780 pts/119  Ss     0:00 -bash
+23871 pts/115  S+     0:00 /bin/bash
+23902 pts/223  S      0:18 ./tsh -p
+23903 pts/223  S      0:18 ./tsh -p
+23935 pts/77   S+     0:00 tsh
+23960 pts/207  S+     0:00 vim tsh.c
+24465 pts/56   Ss+    0:00 -tcsh
+24490 pts/58   Ss+    0:00 -tcsh
+24789 pts/128  S+     0:00 vim FetchStage.C
+24948 pts/226  Ss     0:00 -bash
+24978 pts/226  S      0:03 fish
+25077 pts/243  Ss     0:00 -bash
+25217 pts/132  Ss+    0:00 -bash
+25248 pts/142  Ss     0:00 -bash
+25321 pts/211  S+     0:02 vim index.html
+25358 pts/121  Ss+    0:00 -bash
+25447 pts/223  T      0:10 kak tsh.c
+25508 pts/210  S+     0:00 vim index.html
+25580 pts/54   Ss+    0:00 -tcsh
+25596 pts/149  Ss     0:00 -tcsh
+25655 pts/105  S      0:01 ./myspin 1000000
+25764 pts/168  S+     0:00 make rtest11
+25765 pts/168  D+     0:00 /usr/bin/perl ./sdriver.pl -t trace11.txt -s ./tshref -a -p
+25766 pts/168  S+     0:00 ./tshref -p
+25779 pts/168  R      0:00 /bin/ps a
+25933 pts/131  Ss+    0:00 -tcsh
+25973 pts/212  Ss+    0:00 -tcsh
+26086 pts/83   Ss+    0:00 -tcsh
+26204 pts/105  S      0:01 ./myspin 1000000
+26264 pts/105  S      0:01 ./myspin 100000
+26283 pts/149  S+     0:00 vim FetchStage.C
+26342 pts/1    Ss+    0:00 -tcsh
+26373 pts/193  Ss     0:00 -tcsh
+26397 pts/197  Ss+    0:00 -tcsh
+26891 pts/18   Ss     0:00 -bash
+26895 pts/124  T      0:35 /usr/bin/perl checktsh.pl -c 8
+26919 pts/24   Ss+    0:00 -bash
+26922 pts/18   S+     0:00 vim index.css
+26929 pts/64   S+     0:08 vim SymbolList.C
+27262 pts/37   Ss     0:00 -bash
+27292 pts/37   S+     0:00 fish
+27306 pts/44   S+     0:00 vim index.html
+27373 pts/105  S      0:01 ./myspin 100000
+27554 pts/193  S+     0:00 vim src/util/DoubleNode.java
+27672 pts/8    S      0:16 ./tsh -p
+27747 pts/138  Ss+    0:00 -tcsh
+27786 pts/160  Ss     0:00 -tcsh
+27846 pts/160  S+     0:06 vim Loader.C
+28114 pts/105  S      0:01 ./myspin 1000000
+28312 pts/41   Ss     0:00 -bash
+28316 pts/223  S      0:16 ./tsh -p
+28319 pts/223  Z      0:00 [echo] <defunct>
+28557 pts/8    S      0:16 ./tsh -p
+28694 pts/189  Ss     0:00 -bash
+28699 pts/22   Ss+    0:00 -bin/tcsh
+28744 pts/194  Ss+    0:00 -bash
+28771 pts/189  S+     0:02 vim csim.c
+29011 pts/202  S+    22:47 kak Instructions.h
+29150 pts/8    S      0:17 ./tsh -p
+29154 pts/120  Ss+    0:00 -tcsh
+29169 pts/125  Ss     0:00 -tcsh
+29171 pts/166  Ss     0:00 -bash
+29238 pts/2    Ss+    0:00 -zsh
+29241 pts/125  T      0:00 vim DecodeStage.C
+29244 pts/166  S      0:00 fish
+29311 pts/179  Ss     0:00 -tcsh
+29327 pts/179  Sl+    1:08 mono --gc=sgen /usr/local/lib/pkgconfig/../../lib/mono//4.0/fsi.exe
+29350 pts/35   Ss     0:00 -tcsh
+29364 pts/105  Ss+    0:00 -tcsh
+29402 pts/78   Ss     0:00 -bash
+29456 pts/35   S+     1:05 vim tsh.c
+29475 pts/105  S      0:01 ./myspin 100000
+29505 pts/105  S      0:01 ./myspin 100000
+29680 pts/166  S+     0:00 man tmux
+29681 pts/166  S+     0:00 sh -c (cd "/usr/local/share/man" && (echo ".ll 21.3i"; echo ".nr LL 21.3i"; echo ".pl 1100i"; /bin/cat '/usr/local/share/man/man1/tmux.1'; echo ".\\\""; echo ".pl \n(nlu+10") | /usr/bin/gtbl | /usr/bin/nroff -c -mandoc 2>/dev/null | /usr/bin/less -is)
+29682 pts/166  S+     0:00 sh -c (cd "/usr/local/share/man" && (echo ".ll 21.3i"; echo ".nr LL 21.3i"; echo ".pl 1100i"; /bin/cat '/usr/local/share/man/man1/tmux.1'; echo ".\\\""; echo ".pl \n(nlu+10") | /usr/bin/gtbl | /usr/bin/nroff -c -mandoc 2>/dev/null | /usr/bin/less -is)
+29685 pts/166  S+     0:00 /usr/bin/groff -mtty-char -P-c -mandoc -Tutf8
+29687 pts/166  S+     0:00 /usr/bin/less -is
+29696 pts/166  S+     0:00 grotty -c
+29883 pts/16   Ss     0:00 -bash
+29910 pts/21   Ss+    0:00 -bash
+29933 pts/124  T      0:23 /usr/bin/perl checktsh.pl -c 8
+29947 pts/16   S+     0:00 gdb swap
+29970 pts/102  Ss     0:01 -ksh
+29986 pts/30   Ss+    0:00 -tcsh
+29987 pts/122  Ss     0:00 -ksh
+30001 pts/90   Ss+    0:00 -tcsh
+30002 pts/16   T      0:00 /u/css/finnicanmm/swap
+30031 pts/27   Ss     0:00 -bash
+30123 pts/105  S      0:01 ./myspin 100000
+30137 pts/27   S+     0:00 vim swap.asm
+30145 pts/122  S+     0:00 /bin/bash
+30216 pts/105  S      0:01 ./myspin 1000000
+30226 pts/165  Ss     0:00 -tcsh
+30293 pts/102  S+     0:00 /bin/bash
+30300 pts/105  S      0:01 ./myspin 100000
+30395 pts/125  T      0:00 vim DecodeStage.C
+30616 pts/59   Ss     0:00 -bash
+30692 pts/8    S      0:15 ./tsh -p
+30696 pts/8    Z      0:00 [echo] <defunct>
+30710 pts/8    S      0:17 ./tsh -p
+30776 pts/143  Ss+    0:00 -tcsh
+30791 pts/144  Ss+    0:00 -tcsh
+30910 pts/148  Ss+    0:00 -tcsh
+30949 pts/96   Ss+    0:00 -tcsh
+30963 pts/97   Ss     0:00 -tcsh
+31057 pts/97   S+     0:00 vim Closest.java
+31141 pts/3    S+    15:45 htop
+31330 pts/125  T      0:00 vim FetchStage.C
+31429 pts/78   S+     0:00 vim NgramMap.C
+32081 pts/46   Ss+    0:00 -tcsh
+32083 pts/125  T      0:00 vim DecodeStage.C
+32097 pts/55   Ss+    0:00 -tcsh
+32156 pts/223  S      0:18 ./tsh -p
+32225 pts/66   Ss+    0:00 -bash
+32236 pts/243  S+     0:00 fish
+32239 pts/87   S+     0:03 vim eliza.fs
+32263 pts/165  S+     0:00 /bin/bash run.sh
+32352 pts/165  R+    10:34 ./yess /u/css/classes/3481/174/lab10/Tests/nop.yo
+32483 pts/32   Ss     0:00 -tcsh
+32505 pts/101  Ss     0:00 -tcsh
+32543 pts/101  S+     0:00 vim Loader.C
+32562 pts/32   S+     0:35 gdb lab5
+32718 pts/41   S+     0:01 vim csim.c
+32766 pts/154  Ss     0:00 -bash

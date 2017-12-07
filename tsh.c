@@ -463,7 +463,7 @@ void sigint_handler(int sig)
     pid_t pid = fgpid(jobs);
     //printf("Pid before kill = %d\n", pid);
     if(pid != 0) {
-        kill(pid, SIGINT);
+        kill(-pid, SIGINT);
     }
 }
 

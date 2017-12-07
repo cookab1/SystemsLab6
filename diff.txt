@@ -1,0 +1,27 @@
+1c1
+< ./sdriver.pl -t trace11.txt -s ./tsh -a "-p"
+---
+> ./sdriver.pl -t trace11.txt -s ./tshref -a "-p"
+6c6
+< Job [1] (25716) terminated by signal 2
+---
+> Job [1] (25768) terminated by signal 2
+321,325c321,324
+< 25712 pts/168  S+     0:00 make test11
+< 25713 pts/168  S+     0:00 /usr/bin/perl ./sdriver.pl -t trace11.txt -s ./tsh -a -p
+< 25714 pts/168  S+     0:00 ./tsh -p
+< 25717 pts/168  S      0:00 ./mysplit 4
+< 25720 pts/168  R      0:00 /bin/ps a
+---
+> 25764 pts/168  S+     0:00 make rtest11
+> 25765 pts/168  D+     0:00 /usr/bin/perl ./sdriver.pl -t trace11.txt -s ./tshref -a -p
+> 25766 pts/168  S+     0:00 ./tshref -p
+> 25779 pts/168  R      0:00 /bin/ps a
+408c407
+< 31141 pts/3    S+    15:43 htop
+---
+> 31141 pts/3    S+    15:45 htop
+419c418
+< 32352 pts/165  R+    10:21 ./yess /u/css/classes/3481/174/lab10/Tests/nop.yo
+---
+> 32352 pts/165  R+    10:34 ./yess /u/css/classes/3481/174/lab10/Tests/nop.yo
