@@ -358,27 +358,39 @@ void do_bgfg(char **argv)
 		sscanf(argv[1], "%c%d", &isJid, &ID);
 		job = getjobjid(jobs, ID);
 		if(!strcmp(argv[0], "bg")) {
+			//printf("Is background with jid\n");
 			job->state = BG;
 			kill(-(job->pid), SIGCONT);
+			printf("[%d] (%d) %s", job->jid, job->pid, job->cmdline);
 		} else {
-			
+			//printf("Is foreground with jid\n");
+			if(job->state == ST) {
+				job->state = FG;
+				kill(-(job->pid), SIGCONT);
+			} else {
+				job->state = FG;
+			}
+			waitfg(job->pid);
 		}
 	} else { //passed in a pid in format "cmd 123"
 		sscanf(argv[1], "%d", &ID);
 		job = getjobpid(jobs, ID);
 		if(!strcmp(argv[0], "bg")) {
+			//printf("Is background with pid\n");
 			job->state = BG;
 			kill(-(job->pid), SIGCONT);
+			printf("[%d] (%d) %s", job->jid, job->pid, job->cmdline);
 		} else {
+			//printf("Is foreground with pid\n");
 			if(job->state == ST) {
-				//waitfg();
+				job->state = FG;
 				kill(-(job->pid), SIGCONT);
+			} else {
+				job->state = FG;
 			}
-			//waitfg();
-			job->state = FG; 
+			waitfg(fgpid(jobs));
 		}
 	}
-	printf("[%d] (%d) %s", job->jid, job->pid, job->cmdline);
 }
 
 /* 
