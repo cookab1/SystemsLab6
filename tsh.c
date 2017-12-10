@@ -225,6 +225,7 @@ void eval(char *cmdline)
     return;
 }
 
+//wrapper for the fork system call - adds error checking
 pid_t Fork(void){
     pid_t pid = 0;
 
@@ -233,6 +234,7 @@ pid_t Fork(void){
     return pid;
 }
 
+//wrapper for the exec system call - adds error checking
 int Exec(const char *filename, char *const argv[], char *const envp[]) {
     int num;
 	if((num = execve(filename, argv, envp)) < 0)
@@ -240,9 +242,10 @@ int Exec(const char *filename, char *const argv[], char *const envp[]) {
     return 0;
 }
 
+//function to block all the signals
 void blockAllSigs() {
-    sigfillset(&mask);
-    sigprocmask(SIG_BLOCK, &mask, &prev_mask);
+    sigfillset(&mask); //fill the mask with the bits to block all signals
+    sigprocmask(SIG_BLOCK, &mask, &prev_mask); //block the signals using mask and save the previous state with prev_mask
 }
 
 void addSigBlock(char signal[]){
@@ -313,7 +316,6 @@ int parseline(const char *cmdline, char **argv)
     if (argc == 0)  /* ignore blank line */
 	return 1;
 
-    /* should the job run in the background? */
     if ((bg = (*argv[argc-1] == '&')) != 0) {
 	argv[--argc] = NULL;
     }
@@ -331,15 +333,15 @@ int builtin_cmd(char **argv)
     }
     if(!strcmp(argv[0], "&")) // Ignore singleton &
         return 1;
-    if(!strcmp(argv[0], "jobs")) {
+    if(!strcmp(argv[0], "jobs")) { // jobs command that prints the jobs in the jobs list
         listjobs(jobs);
 		return 1;
     }
-    if(!strcmp(argv[0], "bg")) { // restart a process in the background
+    if(!strcmp(argv[0], "bg")) { // restart/ move a process to the background
         do_bgfg(argv);
 		return 1;
     }
-    if(!strcmp(argv[0], "fg")) { // restart a process in the foreground
+    if(!strcmp(argv[0], "fg")) { // restart/ move a process to the foreground
         do_bgfg(argv);
 		return 1;        
     }
@@ -429,6 +431,7 @@ int bgfg_errors(char **argv)
 	return 0;
 }
 
+//function to determine if input is a number
 int isNum(char *arg) {
 	int i;
 	for(i = 0; arg[i] != '\0'; i++) {
