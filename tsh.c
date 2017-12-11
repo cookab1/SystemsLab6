@@ -2,7 +2,7 @@
  * tsh - A tiny shell program with job control
  * 
  * Andy Cook  Brenner Harris
- *   cookab1     harrisbd>
+ *   cookab1     harrisbd
  */
 #include <stdio.h>
 #include <stdlib.h>
